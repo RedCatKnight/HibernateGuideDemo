@@ -1,0 +1,99 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.yunfeic.test</groupId>
+	<artifactId>MavenWeb2</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+
+<!-- 教程 
+Create a simple Hibernate example with Maven and Eclipse  http://www.javawebtutor.com/articles/maven/maven_hibernate_example.php
+https://www.boraji.com/hibernate-5-hikaricp-configuration-example
+https://github.com/fmarchioni/mastertheboss/tree/master/hibernate/HibernateExample/src/main/resources
+使用Eclipse构建Maven的SpringMVC项目 http://josh-persistence.iteye.com/blog/1925895
+http://www.infoq.com/cn/articles/microframeworks1-spring-boot/ 
+Maven搭建SpringMVC+Hibernate项目详解 http://blog.csdn.net/fengshizty/article/details/43635305
+J2EE项目系列（二）博客管理系统 http://blog.csdn.net/Jack__Frost/article/details/53946765
+Spring mvc框架入门 http://www.open-open.com/lib/view/open1346396525953.html
+ -->	
+	
+	<properties>
+		<servlet.version>2.5</servlet.version>
+		<mariadbJavaClient.version>1.6.4</mariadbJavaClient.version>
+		<slf4j.version>1.7.21</slf4j.version>
+		<hikariCP.version>2.4.13</hikariCP.version>
+		<hibernate.version>4.3.11.Final</hibernate.version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- 部署项目 参考 http://www.cnblogs.com/guogangj/p/5505228.html http://blog.csdn.net/xiejx618/article/details/15022233 -->
+		<warPackageName>${project.artifactId}</warPackageName>
+		<tomcat.deploy.server>localTestServer</tomcat.deploy.server>
+		<tomcat.deploy.serverUrl>http://localhost:8080/manager/text</tomcat.deploy.serverUrl>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${servlet.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- https://github.com/MariaDB/mariadb-connector-j -->
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>${mariadbJavaClient.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<!-- https://github.com/brettwooldridge/HikariCP -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP-java7</artifactId>
+			<version>${hikariCP.version}</version>
+		</dependency>
+	</dependencies>
+
+
+	<profiles>
+		<!-- 服务器部署 -->
+		<profile>
+			<id>deploy2production</id>
+			<properties>
+				<tomcat.deploy.server>productionServer</tomcat.deploy.server>
+				<tomcat.deploy.serverUrl>http://120.26.93.30:8080/manager/text</tomcat.deploy.serverUrl>
+			</properties>
+		</profile>
+	</profiles>
+
+	<build>
+		<finalName>${warPackageName}</finalName>
+		<plugins>
+			<plugin>
+				<!-- <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-deploy-plugin</artifactId> -->
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<server>${tomcat.deploy.server}</server>
+					<url>${tomcat.deploy.serverUrl}</url>
+					<path>/${warPackageName}</path>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
