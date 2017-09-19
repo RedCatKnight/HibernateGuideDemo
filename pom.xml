@@ -6,17 +6,14 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-<!-- 教程 
-Create a simple Hibernate example with Maven and Eclipse  http://www.javawebtutor.com/articles/maven/maven_hibernate_example.php
-https://www.boraji.com/hibernate-5-hikaricp-configuration-example
-https://github.com/fmarchioni/mastertheboss/tree/master/hibernate/HibernateExample/src/main/resources
-使用Eclipse构建Maven的SpringMVC项目 http://josh-persistence.iteye.com/blog/1925895
-http://www.infoq.com/cn/articles/microframeworks1-spring-boot/ 
-Maven搭建SpringMVC+Hibernate项目详解 http://blog.csdn.net/fengshizty/article/details/43635305
-J2EE项目系列（二）博客管理系统 http://blog.csdn.net/Jack__Frost/article/details/53946765
-Spring mvc框架入门 http://www.open-open.com/lib/view/open1346396525953.html
- -->	
-	
+	<!-- 教程 Create a simple Hibernate example with Maven and Eclipse http://www.javawebtutor.com/articles/maven/maven_hibernate_example.php 
+		https://www.boraji.com/hibernate-5-hikaricp-configuration-example https://github.com/fmarchioni/mastertheboss/tree/master/hibernate/HibernateExample/src/main/resources 
+		使用Eclipse构建Maven的SpringMVC项目 http://josh-persistence.iteye.com/blog/1925895 
+		http://www.infoq.com/cn/articles/microframeworks1-spring-boot/ Maven搭建SpringMVC+Hibernate项目详解 
+		http://blog.csdn.net/fengshizty/article/details/43635305 J2EE项目系列（二）博客管理系统 
+		http://blog.csdn.net/Jack__Frost/article/details/53946765 Spring mvc框架入门 
+		http://www.open-open.com/lib/view/open1346396525953.html -->
+
 	<properties>
 		<servlet.version>2.5</servlet.version>
 		<mariadbJavaClient.version>1.6.4</mariadbJavaClient.version>
@@ -53,7 +50,6 @@ Spring mvc框架入门 http://www.open-open.com/lib/view/open1346396525953.html
 			<version>${hibernate.version}</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -74,7 +70,7 @@ Spring mvc框架入门 http://www.open-open.com/lib/view/open1346396525953.html
 			<id>deploy2production</id>
 			<properties>
 				<tomcat.deploy.server>productionServer</tomcat.deploy.server>
-				<tomcat.deploy.serverUrl>http://120.26.93.30:8080/manager/text</tomcat.deploy.serverUrl>
+				<tomcat.deploy.serverUrl>http://10.0.0.42:8080/manager/text</tomcat.deploy.serverUrl>
 			</properties>
 		</profile>
 	</profiles>
@@ -83,7 +79,6 @@ Spring mvc框架入门 http://www.open-open.com/lib/view/open1346396525953.html
 		<finalName>${warPackageName}</finalName>
 		<plugins>
 			<plugin>
-				<!-- <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-deploy-plugin</artifactId> -->
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
