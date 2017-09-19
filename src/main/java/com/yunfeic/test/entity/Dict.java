@@ -16,9 +16,9 @@ public class Dict implements java.io.Serializable{
 		this.dictIsEditable = dictIsEditable;
 	}
 	
-//	public Dict(){
-//		
-//	}
+	public Dict(){
+		
+	}
 	
 	public String getDictId() {
 		return dictId;
