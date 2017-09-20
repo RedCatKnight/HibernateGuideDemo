@@ -21,7 +21,7 @@ public class ConnectionPoolUtil {
 	         try {
 	            StandardServiceRegistryBuilder registryBuilder = 
 	                  new StandardServiceRegistryBuilder();
-
+//	            registryBuilder.configure("");
 	            Map<String, Object> settings = new HashMap<>();
 	            settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
 	            settings.put(Environment.URL, "jdbc:mysql://localhost:3306/BORAJI?useSSL=false");

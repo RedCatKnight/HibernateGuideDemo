@@ -5,12 +5,14 @@
         
 <hibernate-configuration>
     <session-factory>
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
         <property name="hibernate.hikari.minimumIdle">5</property>
         <property name="hibernate.hikari.maximumPoolSize">10</property>
         <property name="hibernate.hikari.idleTimeout">30000</property>
-        <property name="hibernate.hikari.dataSourceClassName">org.mariadb.jdbc.MySQLDataSource</property>
+        <property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
         <property name="hibernate.hikari.dataSource.url">jdbc:mysql://10.0.0.42:3306/crm</property>
         <property name="hibernate.hikari.dataSource.user">root</property>
         <property name="hibernate.hikari.dataSource.password">root</property>
