@@ -4,9 +4,11 @@
         "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
         
 <hibernate-configuration>
+    <!-- 配置加载过程 https://www.ibm.com/developerworks/cn/java/j-hibernate-ut/index.html -->
+    <!-- hibernate所有属性配置https://docs.jboss.org/hibernate/orm/3.5/reference/zh-CN/html/session-configuration.html -->
     <session-factory>
-        <property name="show_sql">true</property>
-        <property name="format_sql">true</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
         <property name="hibernate.hikari.minimumIdle">5</property>
@@ -14,6 +16,10 @@
         <property name="hibernate.hikari.idleTimeout">30000</property>
         <property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
         <property name="hibernate.hikari.dataSource.url">jdbc:mysql://10.0.0.42:3306/crm</property>
+        <!-- 本项目使用utf8,设置一下两项,防止插入中文乱码 -->
+        <property name="hibernate.hikari.dataSource.useUnicode">true</property>
+        <property name="hibernate.hikari.dataSource.characterEncoding">utf8</property>
+        
         <property name="hibernate.hikari.dataSource.user">root</property>
         <property name="hibernate.hikari.dataSource.password">root</property>
         <property name="hibernate.hikari.dataSource.cachePrepStmts">true</property>

@@ -1,34 +1,33 @@
 package com.yunfeic.test.utils;
 
-import java.net.URL;
-import java.util.List;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
+
+import com.yunfeic.test.entity.Dict;
 
 public class AppConfig {
 	public static void main(String[] args) {
-		Configuration config = new Configuration();
-		URL url = AppConfig.class.getClassLoader().getResource("hibernate.cfg.xml");
-		config.configure(url);
-		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties())
-				.build();
-		SessionFactory sessionFactory=config.buildSessionFactory(serviceRegistry);
-		
+		//https://www.boraji.com/hibernate-5-hikaricp-configuration-example
+		SessionFactory sessionFactory=SessionFactoryUtil.getShareInstance().getSessionFactory();
 		Session session=sessionFactory.openSession();
 		Transaction trans=session.beginTransaction();
-		//https://www.boraji.com/hibernate-5-hikaricp-configuration-example
-		List l=session.createSQLQuery("select * from dict").list();
+		Dict d1=new Dict("2","a", "之按时发生行", "73大城市87", "-1");
+//		Dict d2=(Dict) session.get(Dict.class, "2");
+		session.createSQLQuery("select * from dict").list();
+		session.update(d1);
+//		System.out.println(d2.getDictId());
+//		System.out.println(d2.getDictItem());
+		
+//		List<Dict> l=session.createCriteria(Dict.class).list();
+
 		trans.commit();
-		session.flush();
+		
 		session.close();
-		for (Object object : l) {
-			System.out.println(object);
-		}
+		sessionFactory.close();
+//		for (Dict d : l) {
+//			System.out.println(d.toString());
+//		}
 		
 	}
 }
