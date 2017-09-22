@@ -15,7 +15,7 @@
 		http://www.open-open.com/lib/view/open1346396525953.html -->
 
 	<properties>
-		<servlet.version>2.5</servlet.version>
+		<servlet.version>3.1.0</servlet.version>
 		<mariadbJavaClient.version>1.6.4</mariadbJavaClient.version>
 		<slf4j.version>1.7.21</slf4j.version>
 		<hikariCP.version>2.4.13</hikariCP.version>
@@ -32,7 +32,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
+			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
