@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.yunfeic.test.entity.Card" table="card">
+		<id name="cid" type="java.lang.Integer" column="cid">
+			<generator class="foreign">
+				<param name="property">p</param>
+			</generator>
+		</id>
+		<property name="cunm" type="java.lang.Integer">
+			<column name="cunm"/>
+		</property>
+		
+		<one-to-one name="p" class="com.yunfeic.test.entity.Person">	</one-to-one>
+	</class>
+</hibernate-mapping>

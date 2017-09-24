@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+ <hibernate-mapping>
+ <class name="com.yunfeic.test.entity.Person" table="person">
+ <id name="pid" type="java.lang.Integer">
+ <column name="pid"/>
+ <generator class="identity"/>
+ </id>
+ <property name="pname" type="java.lang.String">
+ <column name="pname"/>
+ </property>
+ <one-to-one name="c" class="com.yunfeic.test.entity.Card" cascade="all"></one-to-one>
+ </class>
+ </hibernate-mapping>
