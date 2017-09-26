@@ -1,0 +1,214 @@
+										maven + hikariCP + Hibernate使用教程
+环境: 
+	Maven 3.5.0
+   	jdk 1.8.0_92 
+   	hikariCP 2.4.13
+	hibernate 4.3.11.Final  
+   	eclipse Mars.2 Release (4.5.2)以上
+   	apache-tomcat-8.0.46
+   	mariadb数据库
+  
+hibernate是orm框架,是持久化层框架,专门与数据库打交道. 它将数据库操作转化为对象之间的操作. 那么如何搭建表与对象的桥梁呢? 就是
+在应用程序启动时,加载配置文件,告诉框架表与对象的关系. 具体说来,每一个表对应一个实体类,通过一个映射文件描述它们之间的关系,通过
+对象与对象的关联来反映了表与表的关联 下面通过一个demo来讲解.
+   	
+1. 首先, eclipse创建一个maven项目
+2. 配置pom,并在src/main/resources/下配置hibernate.cfg.xml,编写数据库连接信息的配置,以及加载对象与表的映射文件
+3. 创建一个test database,创建CATERIES, PRODUCTS, SUPPLIERS, PRODUCT_SUPPLY表
+4. 在src/main/resources/下建立entity_mappings文件夹,在entity_mappings里
+编写对象与表的映射文件: 类名.hbm.xml ,如Products.hbm.xml. 
+5. 在映射文件中配置对象与表的关系,及对象与对象的映射关系. 例如: CATERIES与PRODUCTS一对多映射关系, 
+PRODUCTS与SUPPLIERS多对多映射关系,其中PRODUCT_SUPPLY是关系表,不需要单独另建配置文件
+
+
+以下是"类名.hbm.xml"文件中的配置讲解:
+
+实体类类名对应表名;
+实体类的属性对应表中字段;
+实体类中必须定义空的构造方法,无参数,无方法体;
+
+例如实体类 Products.java , 映射文件 Products.hbm.xml
+实体类 Cateries.java , 映射文件 Cateries.hbm.xml
+
+####################################################################################
+create table PRODUCTS (
+   PRODUCT_NO           varchar(10)          not null,
+   CATERY_ID          int               not null,
+   PRODUCT_NAME         varchar(300)         not null,
+   PRODUCT_PRICE        float                not null,
+   PHOTO_PATH           varchar(100)         null,
+   PRODUCT_DESCN        varchar(2000)        null,
+   constraint PK_PRODUCTS primary key  (PRODUCT_NO)
+)default charset=utf8;
+
+
+public class Products {
+	private String productNo;
+	private String productName;
+	private float productPrice;
+	private String photoPath;
+	private String productDescn;
+	
+	//private int cateryId; 
+	private Cateries catery; 
+	/*
+	注释属性 cateryId,使用 private Cateries catery 替代
+	cateryId 对应字段 catery_id ,
+	*/
+	
+	private Set<Suppliers> supplys;
+	
+	public Products(){}
+	....
+	相关get set constructor方法
+}
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.yunfeic.test.entity.Products" table="products">
+		<id name="productNo" type="java.lang.String">
+			<column name="product_no" />
+			<generator class="uuid" />
+		</id>
+		<property name="productName" type="java.lang.String">
+			<column name="product_name" />
+		</property>
+		<property name="productPrice" type="java.lang.Float">
+			<column name="product_price" />
+		</property>
+		<property name="photoPath" type="java.lang.String">
+			<column name="photo_path" />
+		</property>
+		<property name="productDescn" type="java.lang.String">
+			<column name="product_descn" />
+		</property>
+		
+		<!-- 类别与产品 一对多 -->
+		<many-to-one name="catery" class="com.yunfeic.test.entity.Cateries"
+			column="catery_id"></many-to-one>
+		
+		<!-- 产品与供应商 多对多 -->
+		<set name="supplys" table="product_supply">
+		    <key column="product_no"/>
+		    <many-to-many class="com.yunfeic.test.entity.Suppliers" column="supply_no"/>
+		</set>
+		
+	</class>
+</hibernate-mapping>
+
+------------------------------------------------------------------------------------------------------------ 
+
+create table CATERIES (
+   CATERY_ID int,
+   CATERY_NAME varchar(100) not null,
+   CATERY_DESCN varchar(500),
+   constraint PK_CATERIES primary key  (CATERY_ID)
+)default charset=utf8;
+
+
+ public class Cateries {
+	private int cateryId;
+	private String cateryName;
+	private String cateryDescn;
+	
+	private Set<Products> pros;
+	
+	public Cateries() {}
+	
+	....
+	相关get set constructor方法
+	
+}
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+ <hibernate-mapping>
+ <class name="com.yunfeic.test.entity.Cateries" table="cateries">
+ <id name="cateryId" type="java.lang.Integer">
+ <column name="catery_id"/>
+ <generator class="increment"/>
+ </id>
+ <property name="cateryName" type="java.lang.String">
+ <column name="catery_name"/>
+ </property>
+ <property name="cateryDescn" type="java.lang.String" column="catery_descn"></property>
+ <!-- 类别与产品 一对多 类别来级联, 产品来维护关系-->
+ <set name="pros" table="products" cascade="all" inverse="true">
+     <key column="catery_id"></key>
+     <one-to-many class="com.yunfeic.test.entity.Products"/>
+ </set>
+ </class>
+ </hibernate-mapping>
+ 
+------------------------------------------------------------------------------------------------------------
+
+ create table PRODUCT_SUPPLY (
+   SUPPLY_NO            varchar(10)          null,
+   PRODUCT_NO           varchar(10)          null
+)default charset=utf8;
+
+create table SUPPLIERS (
+   SUPPLY_NO            varchar(10)          not null,
+   SUPPLY_NAME          varchar(200)         not null,
+   SUPPLY_DESCN         varchar(400)         null,
+   constraint PK_SUPPLIERS primary key  (SUPPLY_NO)
+)default charset=utf8;
+
+
+public class Suppliers {
+	private String supplyNo;
+	private String supplyName;
+	private String supplyDescn;
+	private Set<Products> pros;
+
+	public Suppliers() {
+	}
+	
+	....
+	相关get set constructor方法
+}
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.yunfeic.test.entity.Suppliers" table="suppliers">
+		<id name="supplyNo" type="java.lang.String">
+			<column name="supply_no" />
+			<generator class="uuid" />
+		</id>
+		<property name="supplyName" type="java.lang.String">
+			<column name="supply_name" />
+		</property>
+		<property name="supplyDescn" type="java.lang.String">
+			<column name="supply_descn" />
+		</property>
+		<!-- 供应商与产品 多对多 供应商来级联, 产品来维护关系-->
+		<set name="pros" table="product_supply" cascade="save-update" inverse="true">
+			<key column="supply_no"></key>
+			<many-to-many class="com.yunfeic.test.entity.Products"
+				column="product_no" />
+		</set>
+	</class>
+</hibernate-mapping>
+####################################################################################
+
+Hibernate映射关系有 一对一, 一对多, 多对一, 多对多, 以及组合关系(一个对象有其他几个对象组合而成,比如一个汽车有多个零部件拼装成的), 继承关系;
+最重要是前四种;
+
+1. one-to-many
+以上面的例子为例(Cateries对应多个Products)
+
+
+
+
+
+   	
