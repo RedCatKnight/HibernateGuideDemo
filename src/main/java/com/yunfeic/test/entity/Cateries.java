@@ -13,6 +13,12 @@ public class Cateries {
 		// TODO Auto-generated constructor stub
 	}
 
+	public Cateries(int cateryId, String cateryName, String cateryDescn) {
+		this.cateryId = cateryId;
+		this.cateryName = cateryName;
+		this.cateryDescn = cateryDescn;
+	}
+
 	public Cateries(String cateryName, String cateryDescn) {
 		this.cateryName = cateryName;
 		this.cateryDescn = cateryDescn;

@@ -33,6 +33,139 @@ Person与Card
 PRODUCTS与SUPPLIERS多对多映射关系,其中PRODUCT_SUPPLY是关系表,不需要单独另建配置文件
 
 
+######################################对象状态与加载策略#####################################
+
+第一点： Hibernate 连接数据库流程
+//1.加载配置文件,获得连接对象工厂
+StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
+Configuration config = new Configuration();
+URL url = SessionFactoryUtil.class.getClassLoader().getResource("hibernate.cfg.xml");
+config.configure(url);
+registryBuilder.applySettings(config.getProperties());
+serviceRegistry = registryBuilder.build();
+sessionFactory = config.buildSessionFactory(serviceRegistry);
+
+//2.获得一个连接
+Session session = sessionFactory.openSession();
+
+//3.开启一个事务
+Transaction trans = session.beginTransaction();
+		
+//4.执行增删改查
+调用session	save/update/delete／createQuery/	createCriteria等等方法，
+如果只执行查询可以不开启事务；
+
+//5.提交事务，会将session中所有持久化对象改动都写入数据库
+trans.commit();	
+
+//6.关闭连接
+session.close();
+
+
+第二点： 总结session 的get/load 方法
+1，get()方法和load()方法基本上是相同的,都是从数据库中取数据，但有两点不同：
+    A，当我们从数据库中取的数据不存在时，get()方法会返回一个null
+	   而load()方法则会直接抛异常（则报错）
+    B，当我们取到数据后，get()方法会将所有的数据都取出来，(即时加载)
+ 	   而load()方法则只会把主键取出来 (称为延时加载/懒加载--lazyinit)
+ 	   所以当session关闭后，get方法获得的对象可以取得该对象除主键之外的属性,
+ 	   load方法只能得到主键;
+2，update()方法和merge()方法也基本上是相同的，都是更新数据,但也还是有不同的：
+     当有两个相同的对象同时处于持久态的时候，我们对其中的某一对象进行update的时候，
+	   update()方法会报错误
+	   而merge()方法则会将两个合并为一个，当只有一个的话merge()方法也会去数据库中查一个相同的出来再进行合并
+3，saveOrUpdate()的意思是：当数据库中存在该主键就update,否则就save
+
+
+第三点： 对象三种状态
+自由态（新建态）：在数据库中是不会存在该对象的，当我们使用session.delete()方法可使对象变为自由态
+持久态（托管态）：则数据是处于了持久的内存中的，数据库中有数据的，当我们改变处于持久态的对象时，数据库中的也会改变
+		  可以变为持久态的方法是：get(),load(),save(),update(),saveOrUpdate(),merge(),(一级缓存)
+游离态：数据库中有可能存在的数据，通过session的close(),clear(),evict(Object)三个方法可以将一个持久态的对象变为一个
+	游离态的对象
+
+1. session关联对象 可以类似理解为 session的内存空间持有了该对象的引用;
+在这里，所谓的同一个对象是指两个对象都是同一个主键id，对应数据库同一条记录;
+2. 当对象是通过session得到的，session就关联了这个对象，这个对象就处于持久态;
+3. 当session对一个新建态对象(比如，new Cateries())操作时，会先关联这个对象，使其处于持久态,但如果
+session已经关联了同一个对象,会报错(比如，先查询所有，在添加已存在的主键ID对象);
+例如
+Cateries Cateries1=new Cateries("洗衣机","");
+Cateries1.setCateryId(4);
+Cateries c=(Cateries) session.get(Cateries.class, 4);
+session.save(Cateries1);
+
+报错org.hibernate.NonUniqueObjectException: A different object with the same identifier value was 
+already associated with the session : [com.yunfeic.test.entity.Cateries#4]
+
+
+4. 持久态的对象与数据库记录对应，已经处于持久态的对象不允许改主键，否则hibernate框架不知你到底要干嘛, 报错，例如
+Cateries cateries = (Cateries) session.get(Cateries.class, 3);
+cateries.setCateryId(2);
+
+报错
+org.hibernate.HibernateException: identifier of an instance of com.yunfeic.test.entity.Cateries was altered from 3 to 2
+
+
+5. 提交事务，会将session中所有持久化对象改动都写入数据库，非持久化状态的对象的改动不会写入数据库;
+
+6. 重复保存持久态的对象,只会执行一次插入语句;
+
+
+第四点:
+当我们使用批量插入到数据库中的时候：我们要通过把对象放到游离状态来完成，因为持久状态的内存并不大，当数据过多会造成内存溢出
+例如：
+	for(int i=0;i<10000000;i++){
+		if(i%50==0){
+			session.clear(); //当有了50个就放入游离状态
+		}
+		session.save(object);
+	}
+
+
+################################主键策略###################################
+identity:
+适合数据库自动增长的主键
+不适合oracle数据库
+
+native:
+是告诉框架由数据库自己搞定
+如果操作的是oracle数据库
+那么会自动去找一个叫hibernate_sequence的序列
+
+increment:(由框架生成.性能，并发)
+是由框架先去查询数据库的表的最大值
+然后再自动生成主键
+
+
+sequence:
+oracle数据库独有的生成方式
+生成的也是一个数字
+
+
+assigned:
+是由程序员自己手动指定
+适合任意类型的主键
+
+
+uuid:(强烈推荐)
+是由框架自动根据mac地址与时间点生成
+一个32位的字符串，作为主键
+
+
+foreign:(表示表的主键由外部给予)
+一般来说我们采用的一对一的方式会用该配置
+一对一：
+1：在双方的类中添加对方的实体对象
+2：在配置中采用<one-to-one>来配置该添加的属性
+
+一对一采用的加载策略是即时加载
+
+
+
+
+
+
 以下是"类名.hbm.xml"文件中的配置讲解:
 
 实体类类名对应表名;

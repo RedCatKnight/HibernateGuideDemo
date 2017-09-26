@@ -25,7 +25,6 @@ public class OneToManyExample {
 
 		trans.commit();
 		session.close();
-		sessionFactory.close();
 	}
 
 }

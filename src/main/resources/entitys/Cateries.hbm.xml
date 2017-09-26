@@ -6,7 +6,7 @@
  <class name="com.yunfeic.test.entity.Cateries" table="cateries">
  <id name="cateryId" type="java.lang.Integer">
  <column name="catery_id"/>
- <generator class="increment"/>
+ <generator class="assigned"/>
  </id>
  <property name="cateryName" type="java.lang.String">
  <column name="catery_name"/>
