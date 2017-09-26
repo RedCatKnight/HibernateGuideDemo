@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+ <hibernate-mapping>
+ <class name="com.yunfeic.test.entity.Cateries" table="cateries">
+ <id name="cateryId" type="java.lang.Integer">
+ <column name="catery_id"/>
+ <generator class="increment"/>
+ </id>
+ <property name="cateryName" type="java.lang.String">
+ <column name="catery_name"/>
+ </property>
+ <property name="cateryDescn" type="java.lang.String" column="catery_descn"></property>
+ <!-- 类别与产品 一对多 类别来级联, 产品来维护关系-->
+ <set name="pros" table="products" cascade="all" inverse="true">
+     <key column="catery_id"></key>
+     <one-to-many class="com.yunfeic.test.entity.Products"/>
+ </set>
+ </class>
+ </hibernate-mapping>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.yunfeic.test.entity.Products" table="products">
+		<id name="productNo" type="java.lang.String">
+			<column name="product_no" />
+			<generator class="uuid" />
+		</id>
+		<property name="productName" type="java.lang.String">
+			<column name="product_name" />
+		</property>
+		<property name="productPrice" type="java.lang.Float">
+			<column name="product_price" />
+		</property>
+		<property name="photoPath" type="java.lang.String">
+			<column name="photo_path" />
+		</property>
+		<property name="productDescn" type="java.lang.String">
+			<column name="product_descn" />
+		</property>
+		
+		<!-- 类别与产品 一对多 -->
+		<many-to-one name="catery" class="com.yunfeic.test.entity.Cateries"
+			column="catery_id"></many-to-one>
+		
+		<!-- 产品与供应商 多对多 -->
+		<set name="supplys" table="product_supply">
+		    <key column="product_no"/>
+		    <many-to-many class="com.yunfeic.test.entity.Suppliers" column="supply_no"/>
+		</set>
+		
+	</class>
+</hibernate-mapping>

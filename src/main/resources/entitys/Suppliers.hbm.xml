@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.yunfeic.test.entity.Suppliers" table="suppliers">
+		<id name="supplyNo" type="java.lang.String">
+			<column name="supply_no" />
+			<generator class="uuid" />
+		</id>
+		<property name="supplyName" type="java.lang.String">
+			<column name="supply_name" />
+		</property>
+		<property name="supplyDescn" type="java.lang.String">
+			<column name="supply_descn" />
+		</property>
+		<!-- 供应商与产品 多对多 供应商来级联, 产品来维护关系-->
+		<set name="pros" table="product_supply" cascade="save-update" inverse="true">
+			<key column="supply_no"></key>
+			<many-to-many class="com.yunfeic.test.entity.Products"
+				column="product_no" />
+		</set>
+	</class>
+</hibernate-mapping>
