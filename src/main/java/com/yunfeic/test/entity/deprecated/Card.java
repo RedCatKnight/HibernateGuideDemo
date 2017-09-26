@@ -1,4 +1,4 @@
-package com.yunfeic.test.entity;
+package com.yunfeic.test.entity.deprecated;
 
 public class Card {
 //	private static final long serialVersionUID = 3422034426606825434L;

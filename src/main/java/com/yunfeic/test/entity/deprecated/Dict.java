@@ -1,4 +1,4 @@
-package com.yunfeic.test.entity;
+package com.yunfeic.test.entity.deprecated;
 
 public class Dict implements java.io.Serializable {
 	private static final long serialVersionUID = 9146564231945920752L;

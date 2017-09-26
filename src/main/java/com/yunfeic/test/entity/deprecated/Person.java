@@ -1,4 +1,4 @@
-package com.yunfeic.test.entity;
+package com.yunfeic.test.entity.deprecated;
 
 
 public class Person {
