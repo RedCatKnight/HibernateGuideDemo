@@ -1,6 +1,15 @@
 create database if not exists test character set utf8;
 use test;
 
+create table person(
+pid int primary key,
+pname varchar(50) not null
+)default charset=utf8;
+
+create table card(
+cid int primary key,
+cname varchar(50) not null
+)default charset=utf8;
 
 create table CATERIES (
    CATERY_ID int,

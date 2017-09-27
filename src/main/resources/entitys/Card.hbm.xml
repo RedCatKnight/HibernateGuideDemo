@@ -9,8 +9,8 @@
 				<param name="property">p</param>
 			</generator>
 		</id>
-		<property name="cunm" type="java.lang.Integer">
-			<column name="cunm"/>
+		<property name="cnum" type="java.lang.Integer">
+			<column name="cnum"/>
 		</property>
 		
 		<one-to-one name="p" class="com.yunfeic.test.entity.Person">	</one-to-one>

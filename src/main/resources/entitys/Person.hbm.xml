@@ -6,7 +6,7 @@
  <class name="com.yunfeic.test.entity.Person" table="person">
  <id name="pid" type="java.lang.Integer">
  <column name="pid"/>
- <generator class="identity"/>
+ <generator class="assigned"/>
  </id>
  <property name="pname" type="java.lang.String">
  <column name="pname"/>

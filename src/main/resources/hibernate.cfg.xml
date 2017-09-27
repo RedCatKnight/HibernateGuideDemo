@@ -16,7 +16,7 @@
 		<property name="hibernate.hikari.maximumPoolSize">10</property>
 		<property name="hibernate.hikari.idleTimeout">30000</property>
 		<property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
-		<property name="hibernate.hikari.dataSource.url">jdbc:mysql://192.168.0.104:3306/test</property>
+		<property name="hibernate.hikari.dataSource.url">jdbc:mysql://10.0.0.42:3306/test</property>
 		<!-- 本项目使用utf8,设置一下两项,防止插入中文乱码 -->
 		<property name="hibernate.hikari.dataSource.useUnicode">true</property>
 		<property name="hibernate.hikari.dataSource.characterEncoding">utf8</property>
@@ -32,5 +32,7 @@
 		<mapping resource="entitys/Cateries.hbm.xml" />
 		<mapping resource="entitys/Products.hbm.xml" />
 		<mapping resource="entitys/Suppliers.hbm.xml" />
+		<mapping resource="entitys/Card.hbm.xml" />
+		<mapping resource="entitys/Person.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

@@ -9,17 +9,24 @@ import org.hibernate.Transaction;
 import com.yunfeic.test.entity.Suppliers;
 import com.yunfeic.test.utils.SessionFactoryUtil;
 
-public class ManyToManyExample {
+public class OneToOneExample {
+
 	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/**
+	 * 同时添加
+	 */
+	public static void add(){
 		SessionFactory sessionFactory = SessionFactoryUtil.getShareInstance().getSessionFactory();
 		Session session = sessionFactory.openSession();
 		Transaction trans = session.beginTransaction();
-		List<Suppliers> list = session.createQuery("select supply from Suppliers supply").list();
-		for (Suppliers supply : list) {
-			System.out.println(supply.getSupplyName() + "==" + supply.getSupplyNo());
-		}
+		
 
 		trans.commit();
 		session.close();
 	}
+	
 }

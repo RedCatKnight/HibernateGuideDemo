@@ -1,16 +1,21 @@
-package com.yunfeic.test.entity.deprecated;
+package com.yunfeic.test.entity;
 
 public class Card {
 //	private static final long serialVersionUID = 3422034426606825434L;
 	private int cid;
-	private int cunm;
+	private int cnum;
 	private Person p;
 	public Card() {}
-	public Card(int cunm, Person p) {
-		super();
-		this.cunm = cunm;
-		this.p = p;
+	
+	
+	
+	public Card(int cid, int cnum) {
+		this.cid = cid;
+		this.cnum = cnum;
 	}
+
+
+
 	public Person getP() {
 		return p;
 	}
@@ -23,11 +28,13 @@ public class Card {
 	public void setCid(int cid) {
 		this.cid = cid;
 	}
-	public int getCunm() {
-		return cunm;
+
+	public int getCnum() {
+		return cnum;
 	}
-	public void setCunm(int cunm) {
-		this.cunm = cunm;
+
+	public void setCnum(int cnum) {
+		this.cnum = cnum;
 	}
 	
 	

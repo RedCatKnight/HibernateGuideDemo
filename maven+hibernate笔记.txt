@@ -349,10 +349,14 @@ public class Suppliers {
 Hibernate映射关系有 一对一, 一对多, 多对一, 多对多, 以及组合关系(一个对象有其他几个对象组合而成,比如一个汽车有多个零部件拼装成的), 继承关系;
 最重要是前四种;
 
-1. one-to-many
+1. one-to-one
+
+
+2. one-to-many
 多方java类中去掉指向一方的属性id,也就是外键,改为private 一方类名 变量名
 以上面的例子为例(Cateries对应多个Products)
 (1). Products类,
+
 
 
 

@@ -3,10 +3,8 @@ package com.yunfeic.test.utils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import com.yunfeic.test.entity.Person;
 
-import com.yunfeic.test.entity.deprecated.Card;
-import com.yunfeic.test.entity.deprecated.Dict;
-import com.yunfeic.test.entity.deprecated.Person;
 
 public class AppConfig {
 	public static void main(String[] args) {

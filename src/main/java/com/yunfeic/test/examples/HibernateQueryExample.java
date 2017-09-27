@@ -6,19 +6,22 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import com.yunfeic.test.entity.Suppliers;
+import com.yunfeic.test.entity.Cateries;
+import com.yunfeic.test.entity.Products;
 import com.yunfeic.test.utils.SessionFactoryUtil;
 
-public class ManyToManyExample {
+public class HibernateQueryExample {
 	public static void main(String[] args) {
+		addCategory();
+	}
+	
+	public static void addCategory() {
+		// TODO Auto-generated method stub
 		SessionFactory sessionFactory = SessionFactoryUtil.getShareInstance().getSessionFactory();
 		Session session = sessionFactory.openSession();
 		Transaction trans = session.beginTransaction();
-		List<Suppliers> list = session.createQuery("select supply from Suppliers supply").list();
-		for (Suppliers supply : list) {
-			System.out.println(supply.getSupplyName() + "==" + supply.getSupplyNo());
-		}
-
+		Cateries c=new Cateries(4, "新型笔记本", null);
+		session.save(c);
 		trans.commit();
 		session.close();
 	}

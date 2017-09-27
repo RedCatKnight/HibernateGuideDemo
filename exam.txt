@@ -1,0 +1,111 @@
+
+SimpleTest
+方法名	                  方法描述
+addCategory( )	        添加一个名称为"新型笔记本"的类别
+updateCategory( )	将名称为"笔记本"的类别的描述信息修改为"新的描述"
+queryDesc( )	        查询名称为"笔记本"的类别的描述信息
+
+=======================================================================================
+OneManyTest
+
+方法名	                  方法描述
+addProduct	        添加一个新的商品,该商品属于一个新建的类别
+			名称为" ThinkPad X60"
+			类别为"新型笔记本"
+queryProducts		查询名称为"笔记本"的类别下的所有商品
+queryCategory		查询名称为" ThinkPad X60"的产品的所属类别                                   
+addCategoryProduct	添加一个名称为"电视盒"的类别,并同时在这个类别中加入三个新的商品，各商品为：
+			1、"10moons天敏 宽屏分量版/LT290W" ￥388 
+			2、"佳的美 TV3820电视盒" ￥169 
+			3、"10moons天敏 随心录4/UT340" ￥399
+			其它的属性自行设置。
+qryProductsByPrice	查询价格在100到300之间的并且类别是"电视盒"的商品
+
+=======================================================================================
+
+ManyManyTest
+
+方法名			方法描述
+addProduct		添加一个的新商品:
+			名称为"Compaq 2620"
+			该商品属于"笔记本"类别1
+			由当前所有的提供商提供货源
+queryProductsBySupply	查询编号为" S0001"的提供商提供的所有商品
+addProductRel		添加名称为"测试"的类别
+			同时添加属于该类别的一个商品,商品编号为"P9001",名称为"测试商品"
+			并同时添加提供该新产品一个供应商,供应商的编号为"S9001",名称为"测试供应商"
+addSupplyRel		添加编号为"S9002",名称为"百脑汇"的供应商
+			并同时添加该供应商提供的一个商品,该商品编号为"P9002",名称为"kodako"
+			同时添加新商品所属的名称为"新型数码相机"的类别
+
+========================================================================================
+
+PartOneTest
+
+方法名			方法描述
+getAllCategories	读取录入的类别信息
+			
+queryProductsByHQL	使用HQL查询所有商品信息
+
+addProductAndCategory	录入一个新商品，并且同时为这个商品创建一个新的类别
+
+addCategoryAndProducts	添加一个新的类别，并录入属于这个类别的3个新商品
+
+updateOneProductCategory 将某商品原来的类别修改为另一个类别
+
+updateWholeCategory--    将某类别下的所有商品都转到另一个类别中去
+
+==============================================================================================
+
+PartTwoTest
+
+方法名			   方法描述
+queryOneProductSuppliers   查询某个商品的所有提供商
+
+addSuppliers		   综合使用session.get、session.update、session.createQuery方法，
+			   为某个商品新增三个已有的供应商
+
+addProductForAllSupply	   添加一个新的商品，并使所有的提供商都提供该商品
+
+
+===============================================================================================
+
+PartThreeTest
+
+方法名			方法描述
+queryCategories		查询出某个提供商提供的所有商品所涉的类别
+
+queryAboveThree		查询多于3种商品的类别信息
+
+queryAboveThreeBySize   查询多于3种商品的类别信息（使用size函数处理）
+
+queryNoNameCount	查询TCL SHE8533的每个供应商的供应商编号
+			、名称及商品数量（使用size函数）
+
+querySupplyByEmpty	查询没有提供商品的所有供应商信息（使用is Empty处理）
+
+queryCategoryByExists	查询至少有一个商品的类别信息（使用exists处理）
+
+querySupplyByElements	查询可以提供某种商品的供应商信息（使用elements处理）
+
+===============================================================================================
+
+PartFourTest
+
+方法名				方法描述
+
+updateProductsToAnotherCategory	批处理将某个类别下的商品修改为现有的另一个类别
+
+deleteCategoryByProductSize	批处理删除没有商品信息的所有类别
+
+
+===============================================================================================
+
+PartFiveTest
+
+方法名				方法描述
+qryProByQBC			使用QBC查询，价格在6800以下的商品
+qryProByQBC2			使用QBC查询，价格为2680,名称为"富士 S6500" 的商品
+qryProByNativeSQL		使用本地SQL,显示所有商品的商品名、价格以及类别信息，并降序排列。
+qryProPaging			将商品按价格升序排列后，取第三页的记录，(每页显示2条记录)
+
