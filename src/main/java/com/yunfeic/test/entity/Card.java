@@ -1,19 +1,15 @@
 package com.yunfeic.test.entity;
 
 public class Card {
-//	private static final long serialVersionUID = 3422034426606825434L;
 	private int cid;
-	private int cnum;
+	private String cname;
 	private Person p;
 	public Card() {}
 	
 	
-	
-	public Card(int cid, int cnum) {
-		this.cid = cid;
-		this.cnum = cnum;
+	public Card(String cname) {
+		this.cname = cname;
 	}
-
 
 
 	public Person getP() {
@@ -29,13 +25,14 @@ public class Card {
 		this.cid = cid;
 	}
 
-	public int getCnum() {
-		return cnum;
+
+	public String getCname() {
+		return cname;
 	}
 
-	public void setCnum(int cnum) {
-		this.cnum = cnum;
+
+	public void setCname(String cname) {
+		this.cname = cname;
 	}
-	
-	
+
 }

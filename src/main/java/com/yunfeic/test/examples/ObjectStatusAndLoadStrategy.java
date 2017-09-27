@@ -34,7 +34,7 @@ public class ObjectStatusAndLoadStrategy {
 
 		trans.commit();
 		session.close();
-
+		sessionFactory.close();
 		System.out.println(c1.getCateryId() + "===" + c1.getCateryName());
 		System.out.println(c2.getCateryId() + "===" + c2.getCateryName());
 	}
@@ -56,6 +56,7 @@ public class ObjectStatusAndLoadStrategy {
 		session.save(cateries1);
 		trans.commit();
 		session.close();
+		sessionFactory.close();
 	}
 
 	
@@ -72,6 +73,7 @@ public class ObjectStatusAndLoadStrategy {
 		cateries.setCateryId(2);
 		trans.commit();
 		session.close();
+		sessionFactory.close();
 	}
 	
 	/**
@@ -90,6 +92,7 @@ public class ObjectStatusAndLoadStrategy {
 		session.save(cateries1);
 		trans.commit();
 		session.close();
+		sessionFactory.close();
 	}
 	
 	/**
@@ -110,6 +113,7 @@ public class ObjectStatusAndLoadStrategy {
 		
 		trans.commit();
 		session.close();
+		sessionFactory.close();
 	}
 	
 }

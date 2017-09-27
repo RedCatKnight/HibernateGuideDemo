@@ -1,7 +1,6 @@
 package com.yunfeic.test.entity;
 
 public class Person {
-	// private static final long serialVersionUID = 4732711513313494849L;
 	private int pid;
 	private String pname;
 	private Card c;
