@@ -305,11 +305,56 @@ session.delete(c);
 *************************************** 第二/三种. one-to-many／many-to-one ***************************************
 例如下方实体类 Person.java , 映射文件 Person.hbm.xml
 实体类 Card.java , 映射文件 Card.hbm.xml
-多方java类中去掉指向一方的属性id,也就是外键,改为private 一方类名 变量名
-以下面的例子为例(Cateries对应多个Products)
+多方类映射的表要有一个column指向一方类映射的表的主键;
+多方java类中去掉指向一方的属性id,也就是外键,改为private 一方类名 变量名;
+
+一对多（主外键关系）(这里以下面的例子为例(Cateries对应多个Products))
+1.一对多在多方的类中配置一个一方的对象
+Products类中添加属性: private Cateries catery
+
+2.将原代表一方的id删除
+/*
+	注释属性 cateryId,使用 private Cateries catery 替代
+	cateryId 对应数据库字段 catery_id 
+*/
+
+3.在多方的配置中配置many-to-one标签,name指多方的类中那个可以得到一方的类对象的属性名,
+class指多方类到底要对应哪个一方的类的类全名, column指name映射多方类对应的表的哪个表字段
+<!-- 类别与产品 一对多 -->
+<many-to-one name="catery" class="com.yunfeic.test.entity.Cateries" column="catery_id">
+</many-to-one>
+
+
+4.在一方的类中配置一个对方的Set集合
+private Set<Products> pros=new HashSet<Products>();
+
+5.在一方的类配置中配置
+<set table="关系表">
+	<key column="在关系表中哪个字段能够找到自己" cascade="all" inverse="true"/>
+	<one-to-many class=""/>
+</set>
+
+ <!-- 类别与产品 一对多 类别来级联, 产品来维护关系-->
+ <set name="pros" table="products" cascade="all" inverse="true">
+     <key column="catery_id"></key>
+     <one-to-many class="com.yunfeic.test.entity.Products"/>
+ </set>
+
+6.关于cascade与inverse
+cascade是表示级联操作数据, inverse是表示哪个对象维护关系列，是否反转这个规则;
+cascade配在哪个对象的配置文件中，哪个对象就获得级联主导权;
+inverse只对set+one-to-many(或many-to-many)有效;
+inverse配在哪个对象的配置文件中,true则这个对象不维护关系，它对应的一方对象来维护关系;
+inverse不进行配置,则级联主导权方会来维护关系,会导致n+1问题(比如,保存1个类别与n个产品,按道理会有n+1个插入语句,结果多了n个update语句);
+
+7. 关于set配置中的lazy,lazy默认true,其他值false表示即时加载,extra表示即时加载但可以拿到关联对象的集合的size;
+lazy指是否延迟加载目标对象的所有关联对象,默认延迟加载,除非把lazy设为false,才会即时加载所有关联对象,否则只会有所有关联对象主键ID;
+lazy配在哪个对象的映射文件,目标对象就是谁,而关联对象就是指lazy所在的元素标签对应的对象,如下
+<many-to-one name="catery" class="com.yunfeic.test.entity.Cateries"
+			column="catery_id"  lazy="false"></many-to-one>
 ###################################################################################
 create table PRODUCTS (
-   PRODUCT_NO           varchar(10)          not null,
+   PRODUCT_NO           varchar(50)          not null,
    CATERY_ID          int               not null,
    PRODUCT_NAME         varchar(300)         not null,
    PRODUCT_PRICE        float                not null,
@@ -333,7 +378,7 @@ public class Products {
 	cateryId 对应字段 catery_id ,
 	*/
 	
-	private Set<Suppliers> supplys;
+	private Set<Suppliers> supplys=new HashSet<Suppliers>();
 	
 	public Products(){}
 	....
@@ -392,7 +437,7 @@ create table CATERIES (
 	private String cateryName;
 	private String cateryDescn;
 	
-	private Set<Products> pros;
+	private Set<Products> pros=new HashSet<Products>();
 	
 	public Cateries() {}
 	
@@ -423,23 +468,58 @@ create table CATERIES (
  </class>
  </hibernate-mapping>
 ###################################################################################
+第一案例:保存1个类别与2个产品,互相设置关系
+Cateries c=new Cateries(4, "军火", "枪炮...");
+Products p1=new Products("枪", 3242, "", "");
+Products p2=new Products("大炮", 32742, "", "");
+c.getPros().add(p1);
+c.getPros().add(p2);
+//p1.setCatery(c);
+//p2.setCatery(c);
+如果产品不添加类别，外键会为null,如果数据库表products的外键设置了非空约束,则报错,所以一定要互相设置关系
 
-(1). Products类,
+第二案例:删除类别或产品，首先先查出类别或产品对象
+Products p=(Products) session.get(Products.class, "0011");
+session.delete(p);
 
-
-
-
+第三案例:为2号类别添加2个产品
+Cateries cate=(Cateries) session.get(Cateries.class, 2);
+Products p1=new Products("苹果电脑", 5242, "", "");
+Products p2=new Products("联想电脑", 22742, "", "");
+p1.setCatery(cate);
+p2.setCatery(cate);
+session.save(p1);
+session.save(p2);
 ***************************************** 第四种. many-to-many *********************************************
+这里以SUPPLIERS与Products为例
+1. 多对多与一对一类似,但数据库中要建立一张中间的关系表(这里是PRODUCT_SUPPLY表);
+2. 在双方的类中配置都一个对方的Set集合;
+SUPPLIERS.java中 private Set<Products> pros=new HashSet<Products>();
+Products.java中  private Set<Suppliers> supplys=new HashSet<Suppliers>();
+3. 在双方的类配置文件中都配置关联关系,配置标签含义同one-to-many,通常一方主导级联, 一方维护关系
+在Suppliers.hbm.xml中配置
+<!-- 供应商与产品 多对多 供应商来级联, 产品来维护关系-->
+<set name="pros" table="product_supply" cascade="save-update" inverse="true">
+	<key column="supply_no"></key>
+	<many-to-many class="com.yunfeic.test.entity.Products"
+		column="product_no" />
+</set>
 
+在Products.hbm.xml中配置
+<!-- 产品与供应商 多对多 -->
+<set name="supplys" table="product_supply">
+	<key column="product_no"/>
+	<many-to-many class="com.yunfeic.test.entity.Suppliers" column="supply_no"/>
+</set>
 
 ####################################################################################
  create table PRODUCT_SUPPLY (
-   SUPPLY_NO            varchar(10)          null,
-   PRODUCT_NO           varchar(10)          null
+   SUPPLY_NO            varchar(50)          null,
+   PRODUCT_NO           varchar(50)          null
 )default charset=utf8;
 
 create table SUPPLIERS (
-   SUPPLY_NO            varchar(10)          not null,
+   SUPPLY_NO            varchar(50)          not null,
    SUPPLY_NAME          varchar(200)         not null,
    SUPPLY_DESCN         varchar(400)         null,
    constraint PK_SUPPLIERS primary key  (SUPPLY_NO)
@@ -450,7 +530,7 @@ public class Suppliers {
 	private String supplyNo;
 	private String supplyName;
 	private String supplyDescn;
-	private Set<Products> pros;
+	private Set<Products> pros=new HashSet<Products>();
 
 	public Suppliers() {
 	}
@@ -485,6 +565,63 @@ public class Suppliers {
 	</class>
 </hibernate-mapping>
 ###################################################################################
+看一下代码即可学会many-to-many
+		//一次添加2个学生与2个老师
+//		Student s1 = new Student();
+//		s1.setSname("王五");
+//		Student s2 = new Student();
+//		s2.setSname("张三");
+//		
+//		Teacher t1 = new Teacher();
+//		t1.setTname("王五2");
+//		Teacher t2 = new Teacher();
+//		t2.setTname("张三2");
+//		
+//		//相互设置关系
+//		//学生添加老师
+//		s1.getTeachers().add(t1);
+//		s1.getTeachers().add(t2);
+//		s2.getTeachers().add(t1);
+//		s2.getTeachers().add(t2);
+//		
+//		//老师添加学生
+//		t1.getStudents().add(s1);
+//		t1.getStudents().add(s2);
+//		t2.getStudents().add(s1);
+//		t2.getStudents().add(s2);
+//		
+//		
+//		session.save(s1);
+//		session.save(s2);
+		
+		//删除学号为1的学生
+//		Student student = (Student)session.get(Student.class, 1L);
+//		//删除学生表
+//		session.delete(student);
+//		//删除关系表中的关系
+//		Set<Teacher> teachers = student.getTeachers();
+//		for (Teacher teacher : teachers) {
+//			teacher.getStudents().remove(student);
+//		}
+		
+		//新来一个老师，也教2号学生
+//		Student student = (Student)session.get(Student.class, 2L);
+//		Teacher t = new Teacher();
+//		t.setTname("王五");
+//		t.getStudents().add(student);
+//		session.save(t);
 
+
+		//3号老师不教2号学生了
+//		Student student = (Student)session.get(Student.class, 2L);
+//		Teacher teacher = (Teacher)session.get(Teacher.class, 3L);
+//		teacher.getStudents().remove(student);
+		
+		
+		
+		//2号老师辞职
+//		Teacher teacher = (Teacher)session.get(Teacher.class, 2L);
+//		teacher.setStudents(null);
+//		session.delete(teacher);
 
    	

@@ -20,7 +20,7 @@ create table CATERIES (
 
 
 create table PRODUCTS (
-   PRODUCT_NO           varchar(10)          not null,
+   PRODUCT_NO           varchar(50)          not null,
    CATERY_ID          int               not null,
    PRODUCT_NAME         varchar(300)         not null,
    PRODUCT_PRICE        float                not null,
@@ -32,12 +32,12 @@ create table PRODUCTS (
 
 
 create table PRODUCT_SUPPLY (
-   SUPPLY_NO            varchar(10)          null,
-   PRODUCT_NO           varchar(10)          null
+   SUPPLY_NO            varchar(50)          null,
+   PRODUCT_NO           varchar(50)          null
 )default charset=utf8;
 
 create table SUPPLIERS (
-   SUPPLY_NO            varchar(10)          not null,
+   SUPPLY_NO            varchar(50)          not null,
    SUPPLY_NAME          varchar(200)         not null,
    SUPPLY_DESCN         varchar(400)         null,
    constraint PK_SUPPLIERS primary key  (SUPPLY_NO)

@@ -1,12 +1,13 @@
 package com.yunfeic.test.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Suppliers {
 	private String supplyNo;
 	private String supplyName;
 	private String supplyDescn;
-	private Set<Products> pros;
+	private Set<Products> pros=new HashSet<Products>();
 
 	public Suppliers() {
 	}

@@ -1,5 +1,6 @@
 package com.yunfeic.test.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Products {
@@ -10,7 +11,7 @@ public class Products {
 	private String productDescn;
 
 	private Cateries catery;
-	private Set<Suppliers> supplys;
+	private Set<Suppliers> supplys=new HashSet<Suppliers>();
 
 	public Products() {
 		// TODO Auto-generated constructor stub
