@@ -4,9 +4,12 @@
         "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 
 <hibernate-configuration>
+	<!-- session-factory” must match “(property*,mapping*,(class-cache|collection-cache)*,event*,listener*) -->
+	<!-- 即必须先配置property,才能是mapping，其他按顺序依次配置 -->
 
 	<!-- 配置加载过程 https://www.ibm.com/developerworks/cn/java/j-hibernate-ut/index.html -->
 	<!-- hibernate所有属性配置https://docs.jboss.org/hibernate/orm/3.5/reference/zh-CN/html/session-configuration.html -->
+	<!-- hibernate缓存配置 https://www.ezlippi.com/blog/2015/07/hibernate-cache-guide.html -->
 	<session-factory>
 		<property name="hibernate.show_sql">true</property>
 		<property name="hibernate.format_sql">true</property>
@@ -29,10 +32,25 @@
 		<property name="hibernate.hikari.dataSource.useServerPrepStmts">true</property>
 		<property name="hibernate.current_session_context_class">thread</property>
 
+		<!-- 在 3.2 版本之前，默认使用 EhCache 作为缓存实现，但从 3.2 起就不再这样了。 所以hibernate.cache.region.factory_class -->
+		<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+		
+		<!-- 打开二级缓存 -->
+		<property name="hibernate.cache.use_second_level_cache">true</property>
+		
+		<!-- 打开查询缓存 -->
+		<property name="hibernate.cache.use_query_cache">true</property>
+		 
+		<!--配置外部缓存的方式是Ehcache方式 --> 
+		<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+
 		<mapping resource="entitys/Cateries.hbm.xml" />
 		<mapping resource="entitys/Products.hbm.xml" />
 		<mapping resource="entitys/Suppliers.hbm.xml" />
 		<mapping resource="entitys/Card.hbm.xml" />
 		<mapping resource="entitys/Person.hbm.xml" />
+
+		<!-- 配置哪个类进行二级缓存 -->
+		<class-cache class="com.yunfeic.test.entity.Cateries" usage="read-only"/>
 	</session-factory>
 </hibernate-configuration>

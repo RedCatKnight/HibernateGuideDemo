@@ -22,6 +22,9 @@ Person与Card
             </generator>
         </id>
 
+第四, <!-- session-factory” must match “(property*,mapping*,(class-cache|collection-cache)*,event*,listener*) -->
+即必须先配置property,才能是mapping，其他按顺序依次配置.
+
 下面通过一个demo来讲解:
    	
 1. 首先, eclipse创建一个maven项目
@@ -565,7 +568,7 @@ public class Suppliers {
 	</class>
 </hibernate-mapping>
 ###################################################################################
-看一下代码即可学会many-to-many
+看以下代码即可学会many-to-many
 		//一次添加2个学生与2个老师
 //		Student s1 = new Student();
 //		s1.setSname("王五");
@@ -624,4 +627,162 @@ public class Suppliers {
 //		teacher.setStudents(null);
 //		session.delete(teacher);
 
-   	
+   
+   
+*****************************HQL查询 Hibernate Query Language********************************
+1. HQL的查询是基于对象的,所以它的查询对象时类名而不是表名,支持对象的导航操作,即对象.属性;
+List<Products> l = session.createQuery("select p from Products p").list();
+
+2. 它支持命名参数的用法，与传统的占位符的硬编码相比更灵活;
+List<Products> l = session.createQuery("select p from Products p where p.productName like :productName")
+				.setString("productName", "%" + "惠" + "%").list();
+如上使用 ":productName" 代替 "?",当然也可直接使用?,不过建议还是使用命名参数，因为命名参数无顺序要求。
+List<Products> l = session.createQuery("select p from Products p where p.productName like :productName")
+				.setString("productName", "%" + "惠" + "%").list();
+
+3. HQL支持SQL的绝大部分的操作
+例如：
+>,<,<=,>=,!=,and,or,not
+is null,in,between and等
+另外也支持sql中的聚合函数
+例如
+max，min，avg，sum，count等
+也支持sql中的子查询与表连接,排序，分组
+还支持自己独有的方式
+例如集合的size。
+System.out.println("查询多于3种产品的类别");
+List<Cateries> l = session.createQuery("select c from Cateries c where c.pros.size >= 3").list();
+for (Cateries item : l) {
+	System.out.println("类别 " + item.getCateryName());
+}
+
+System.out.println("");
+System.out.println("查询最高的价格的产品");
+List<Products> list = session
+		.createQuery(" from Products where productPrice=(select max(p.productPrice) from Products p)").list();
+for (Products item : list) {
+	System.out.println("产品 " + item.getProductName() + " 价格 " + item.getProductPrice());
+}
+
+System.out.println("");
+System.out.println("查询价格在1000到9000之间带三字的产品");
+List<Products> list2 = session
+		.createQuery(
+				" from Products p where productPrice between :min and :max and p.productName like :productName")
+		.setFloat("min", 1000).setFloat("max", 9000).setString("productName", "%" + "三" + "%").list();
+for (Products item : list2) {
+	System.out.println("产品 " + item.getProductName() + " 价格 " + item.getProductPrice());
+}
+
+
+4. 关于分页(setFirstResult指结果集哪个索引开始查,索引默认0代表第一条；setMaxResults表示查几条) 
+setFirstResult（(pageNo-1)*pageSize）
+setMaxResults(pageSize)
+例如
+System.out.println("查询第2页，每页3条");
+		List<Products> l = session.createQuery("select p from Products p").setFirstResult(3)
+				.setMaxResults(3).list();
+		for (Products item : l) {
+			System.out.println("产品 " + item.getProductName());
+		}
+
+
+5. 批处理(注意一般少用批处理)
+// 推荐方法1
+		session.createQuery(
+				"update from Products p set p.catery.cateryId=:newCateryId where p.catery.cateryId=:oldCateryId")
+				.setInteger("oldCateryId", 2).setInteger("newCateryId", 1).executeUpdate();
+
+		// 方法2,多执行了查询
+//		Cateries c1 = (Cateries) session.get(Cateries.class, 1);
+//		Cateries c2 = (Cateries) session.get(Cateries.class, 2);
+//		session.createQuery("update from Products p  set p.catery=:newCatery where p.catery=:oldCatery")
+//				.setParameter("newCatery", c1).setParameter("oldCatery", c2).executeUpdate();
+
+
+
+*****************************QBC查询 Query By Criteria（标准）********************************
+1. 完全面向对象的查询,使用核心即
+创建标准createCriteria,添加Restrictions,添加排序规则addOrder; 数据库的聚合或者分组函数需要使用投影Projections
+
+2. 它里面所有的操作都是框架已经封装好的, 如果要给的是where后面的条件
+那么应该采用 .add(Restrictions.方法（）)加入条件规则
+排序采用 .addOrder()加入排序规则
+
+3. 如果查询的结果需要对象.属性匹配,那么需要为属性创建别名
+session.createCriteria(Products.class).createAlias("catery", "cate")
+
+4. 如果是聚合或者分组等查询则需要使用投影技术
+Projection projection = Projections.max("productPrice");
+
+Projection maxprojection = Projections.max("productPrice");
+Projection groupprojection = Projections.groupProperty("c.cateryId");
+// 投影的集合对象
+ProjectionList plist = Projections.projectionList();
+plist.add(maxprojection);
+plist.add(groupprojection);
+
+
+
+********************************** hibernate缓存 **********************************
+分为两大类：一级缓存和二级缓存
+
+(是指查询单个对象的时候)
+1. 一级缓存 session级别的缓存(hibernate自带的缓存)
+
+
+2. 二级缓存 sessionFactory级别的缓存
+必须手动开启缓存,在hibernate.cfg.xml中
+<!-- 第一步打开二级缓存 -->
+<!-- <property name="hibernate.cache.use_second_level_cache">true</property> -->
+
+<!-- 第二步，在 3.2 版本之前，默认使用 EhCache 作为缓存实现，但从 3.2 起就不再这样了。
+		所以要配置hibernate.cache.region.factory_class，需要依赖 hibernate-ehcache jar -->
+<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+
+<!-- 第三步, 配置哪个类进行二级缓存 -->
+第一种方法，在类的映射文件中class标签内配置 <cache usage="read-only"/>
+第二种方法，在hibernate.cfg.xml中配置 <class-cache class="类全名" usage="read-only"/>
+
+
+
+3. 查询缓存(分为一级查询缓存和二级查询缓存)
+对于查询而言缓存的key不是对象的主键,值也不是对应的对象;
+key而是sql语句,值是该sql语句查询出的集合;
+<!-- 第一步打开查询缓存 -->
+<property name="hibernate.cache.use_query_cache">true</property>
+
+<!-- 第二步，在 3.2 版本之前，默认使用 EhCache 作为缓存实现，但从 3.2 起就不再这样了。
+		所以要配置hibernate.cache.region.factory_class，需要依赖 hibernate-ehcache jar -->
+<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+
+<!-- 第三步, 在编写查询时设置该语句是否使用查询缓存,即setCacheable(true) -->
+session1.createQuery("from Cateries").setCacheable(true).list();
+
+<!-- 第四, 如果是二级查询缓存,还需要打开二级缓存,请仿照上方二级缓存实现步骤 -->
+
+
+
+4. 外部缓存, 缓存存放在应用程序之外,比如系统或临时目录(分为一级外部缓存和二级外部缓存)
+只针对查询缓存而言的,所以是对查询缓存更细致的优化(比如，在session未关闭前,决定对象缓存时间)
+<!-- 第一步打开查询缓存 -->
+<property name="hibernate.cache.use_query_cache">true</property>
+
+<!-- 第二步，在 3.2 版本之前，默认使用 EhCache 作为缓存实现，但从 3.2 起就不再这样了。
+		所以要配置hibernate.cache.region.factory_class，需要依赖 hibernate-ehcache jar -->
+<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+
+<!-- 第三步,在配置中配置缓存提供的类(一般用EhCache,不用OSCache,
+当然也可以使用公司自定义的cache类，这里以Ehcache为例) -->
+<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+
+<!-- 第四步,EhCache是用配置文件配置的,在src/main/resources下建立缓存的策略配置文件ehcache.xml,xml名字不能改,内容网上找 -->
+
+<!-- 第五步, 自己在策略配置文件中定义缓存的名称以及缓存的策略 -->
+<cache name="mymaxcache" maxElementsInMemory="10000" eternal="false"
+		overflowToDisk="true" timeToIdleSeconds="120" timeToLiveSeconds="5"
+		diskPersistent="false" />
+
+
+<!-- 第六步,在代码中的查询语句上使用某个缓存策略区间 -->
+session.createQuery("from Cateries").setCacheable(true).setCacheRegion("mymaxcache").list();

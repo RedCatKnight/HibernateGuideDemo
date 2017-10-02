@@ -4,6 +4,7 @@
  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
  <hibernate-mapping>
  <class name="com.yunfeic.test.entity.Cateries" table="cateries">
+<!--  <cache usage="read-only"/> -->
  <id name="cateryId" type="java.lang.Integer">
  <column name="catery_id"/>
  <generator class="assigned"/>

@@ -16,7 +16,11 @@ public class Products {
 	public Products() {
 		// TODO Auto-generated constructor stub
 	}
-
+	
+	public Products(String productName, float productPrice) {
+		this.productName = productName;
+		this.productPrice = productPrice;
+	}
 	public Products(String productName, float productPrice, String photoPath, String productDescn) {
 		this.productName = productName;
 		this.productPrice = productPrice;
